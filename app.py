@@ -2,6 +2,10 @@ from flask import Flask, render_template, request
 from flask_socketio import SocketIO, send, join_room
 from pymongo import MongoClient
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Get port from environment variable (default 8080 for Railway)
 port = int(os.environ.get("PORT", 8080))
@@ -13,7 +17,8 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 # MongoDB Atlas Connection (Using Environment Variables for Security)
 MONGO_URI = os.getenv("MONGO_URI")
 if not MONGO_URI:
-    raise ValueError("MongoDB URI is not set in environment variables!")
+    print("\n⚠️  MongoDB URI is not set. Make sure to define MONGO_URI in your environment variables.\n")
+    exit(1)
 
 client = MongoClient(MONGO_URI)
 db = client["chatDB"]
