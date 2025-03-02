@@ -1,2 +1,6 @@
-"gunicorn" 
-"waitress" 
+gunicorn
+flask
+flask-socketio
+eventlet
+pymongo
+waitress
