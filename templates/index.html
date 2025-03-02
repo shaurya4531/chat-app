@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+</head>
+<body>
+    <h2>Chat Room</h2>
+    <input type="text" id="username" placeholder="Enter username">
+    <input type="text" id="room" placeholder="Enter room name">
+    <button onclick="joinRoom()">Join</button>
+
+    <div id="chat-box"></div>
+    <input type="text" id="message" placeholder="Type a message">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        var socket = io.connect("http://localhost:5000");
+
+        function joinRoom() {
+            let username = document.getElementById("username").value;
+            let room = document.getElementById("room").value;
+            socket.emit("join", { username, room });
+        }
+
+        function sendMessage() {
+            let username = document.getElementById("username").value;
+            let room = document.getElementById("room").value;
+            let msg = document.getElementById("message").value;
+            socket.emit("message", { username, msg, room });
+        }
+
+        socket.on("message", function(data) {
+            let chatBox = document.getElementById("chat-box");
+            let newMessage = document.createElement("p");
+            newMessage.innerHTML = data.msg;
+            chatBox.appendChild(newMessage);
+        });
+    </script>
+</body>
+</html>
