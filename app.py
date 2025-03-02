@@ -1,13 +1,20 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, send, join_room
 from pymongo import MongoClient
+import os
+
+# Get port from environment variable (default 8080 for Railway)
+port = int(os.environ.get("PORT", 8080))
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'supersecretkey'
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "supersecretkey")
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# MongoDB Atlas Connection
-MONGO_URI = "mongodb+srv://shauryamule2020:pass%40321@cluster0.jk18o.mongodb.net/chatDB?retryWrites=true&w=majority"
+# MongoDB Atlas Connection (Using Environment Variables for Security)
+MONGO_URI = os.getenv("MONGO_URI")
+if not MONGO_URI:
+    raise ValueError("MongoDB URI is not set in environment variables!")
+
 client = MongoClient(MONGO_URI)
 db = client["chatDB"]
 messages_collection = db["messages"]
@@ -41,4 +48,4 @@ def on_join(data):
     send({"msg": f"{data['username']} has joined the chat"}, room=room)
 
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
+    socketio.run(app, host="0.0.0.0", port=port, debug=True)
